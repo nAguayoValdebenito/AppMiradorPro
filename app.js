@@ -20,6 +20,29 @@ app.get('/gastos_comunes', (req, res) => {
     });
 });
 
+// Obtener gastos comunes por mes
+app.get('/gastos_por_mes/:mes', (req, res) => {
+    const { mes } = req.params;
+
+    const consulta = 'SELECT * FROM gastos_departamento WHERE mes = ?';
+
+    database.query(consulta, [mes], (error, resultados) => {
+        if (error) {
+            console.error("Error al consultar la base de datos:", error);
+            res.status(500).send("Error en el servidor");
+            return;
+        }
+
+        if (resultados.length === 0) {
+            res.status(404).json({ mensaje: `No se encontraron gastos para el mes de ${mes}` });
+            return;
+        }
+
+        res.json(resultados);
+    });
+});
+
+
 // Agregar un nuevo gasto común
 app.post('/crear_gasto', (req, res) => {
     const { idDepartamento, mes, anio, monto, pagado } = req.body;
